@@ -1,10 +1,10 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 const tokenHandler = {};
 const secret = process.env.JWT_SECRET;
 
 tokenHandler.generateToken = (fieldToSecure, duration) => {
   try {
-    return jwt.sign({ fieldToSecure }, secret, {
+    return jwt.sign({ fieldToSecure }, process.env.JWT_SECRET, {
       expiresIn: duration ? duration : 18408600000,
     });
   } catch (error) {
@@ -14,7 +14,10 @@ tokenHandler.generateToken = (fieldToSecure, duration) => {
 
 tokenHandler.decodeToken = (token) => {
   try {
-    return jwt.verify(token, secret);
+    return jwt.verify(token, process.env.JWT_SECRET, (err, info) => {
+      if (err) throw err;
+      return res.json(info);
+    });
   } catch (error) {
     res.status(422);
     throw new Error(error);

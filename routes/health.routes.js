@@ -1,7 +1,10 @@
-const health = require("../controllers/health.controllers");
-const healthRoutes = require("express").Router();
+// const health = require("../controllers/health.controllers");
+// const healthRoutes = require("express").Router();
 
-healthRoutes.get("/health", health.Get);
-healthRoutes.post("/health", health.Post);
+// healthRoutes.get("/health", health.Get);
+// healthRoutes.post("/health", health.Post);
 
-module.exports = healthRoutes;
+// module.exports = healthRoutes;
+const express = require('express');
+
+const router = express.Router();
