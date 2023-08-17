@@ -13,9 +13,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const storage = multer.memoryStorage();
+
 // Multer Configuration
 const upload = multer({
-  dest: "uploads/",
+  storage: storage,
   limits: { fileSize: 1024 * 1024 },
   fileFilter: fileFilter,
 });

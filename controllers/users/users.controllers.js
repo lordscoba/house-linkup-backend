@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 
 const register = expressAsyncHandler(async (req, res) => {
   try {
-    const { fullName, email, password } = req?.body;
+    const { full_name, email, password } = req?.body;
 
     const userExist = await UserModel.findOne({ email });
     if (userExist) {
@@ -28,7 +28,7 @@ const register = expressAsyncHandler(async (req, res) => {
 
     // CREATE NEW USER
     const newUser = await UserModel.create({
-      fullName,
+      full_name,
       password: passwordHarsh,
       email,
     });
