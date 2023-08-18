@@ -26,10 +26,9 @@ const profileRoutes = require('./routes/profile.routes');
 
 const developmentOrigin = ['http://localhost:3000', 'http://localhost:3001'];
 const productionOrigin = [
-  'https://www.house-linkup.com',
-  'www.house-linkup.com',
-  'https://house-linkup.com',
-  'house-linkup.com',
+  'https://www.houselinkup.com',
+  'www.houselinkup.com',
+  'houselinkup.com',
 ];
 
 app.use(
