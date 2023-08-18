@@ -1,47 +1,63 @@
 // importing express framework
-const express = require("express");
+const express = require('express');
 const app = express();
 
 // importing .env parser
-const dotenv = require("dotenv");
+const dotenv = require('dotenv');
 dotenv.config();
 
 // importing monogodb database
-const connectDB = require("./config/db");
+const connectDB = require('./config/db');
 connectDB();
 
 // importing middlewares
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const normalizeCase = require("./utils/nomaliseCase");
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const normalizeCase = require('./utils/nomaliseCase');
 // const { protectUser } = require("./middleware/userMiddleware"); // Auth Middlewares
 
 // importing Routes
-const healthRoutes = require("./routes/health.routes");
-const userRoutes = require("./routes/users.routes");
-const profileRoutes = require("./routes/profile.routes");
+const healthRoutes = require('./routes/health.routes');
+const userRoutes = require('./routes/users.routes');
+const profileRoutes = require('./routes/profile.routes');
 
 // Running Global middlewares
-app.use(cors());
+
+const developmentOrigin = ['http://localhost:3000', 'http://localhost:3001'];
+const productionOrigin = [
+  'https://www.house-linkup.com',
+  'www.house-linkup.com',
+  'https://house-linkup.com',
+  'house-linkup.com',
+];
+
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? productionOrigin
+        : developmentOrigin,
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
 
 // Running Routers
-app.use("/api/v1/", healthRoutes);
+app.use('/api/v1/', healthRoutes);
 
 // middleware to reduce to lowercase
-app.use(["/api/v1/login", "/api/v1/signup"], normalizeCase);
-app.use("/api/v1/", userRoutes);
+app.use(['/api/v1/login', '/api/v1/signup'], normalizeCase);
+app.use('/api/v1/', userRoutes);
 
 // protected routes
 // app.use(protectUser);
-app.use("/api/v1/", profileRoutes);
+app.use('/api/v1/', profileRoutes);
 
 // Error Middlewares
-const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 //Not found URL middleware
 app.use(notFound);
