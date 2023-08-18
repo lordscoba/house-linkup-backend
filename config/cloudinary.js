@@ -1,5 +1,5 @@
 // Cloudinary config goes under here
-const cloudinary = require("cloudinary");
+const cloudinary = require("cloudinary").v2;
 const dotenv = require("dotenv");
 dotenv.config();
 
