@@ -1,22 +1,14 @@
-const express = require('express');
 const {
   register,
   login,
-  getUserDetails,
-  updateProfile,
-} = require('../controllers/users.controllers');
-const multer = require('multer');
+  forgotPassword,
+  resetPassword,
+} = require("../controllers/users/users.controllers");
+const Authrouter = require("express").Router();
 
-const router = express.Router();
+Authrouter.post("/register", register);
+Authrouter.post("/login", login);
+Authrouter.post("/forgotpassword", forgotPassword);
+Authrouter.post("/reset", resetPassword);
 
-// // Multer Configuration
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage });
-const upload = multer({ dest: 'uploads/' });
-
-router.post('/register', register);
-router.post('/login', login);
-router.get('/user-details/:id', getUserDetails);
-router.post('/update-profile/:id', upload.array('image'), updateProfile);
-
-module.exports = router;
+module.exports = Authrouter;

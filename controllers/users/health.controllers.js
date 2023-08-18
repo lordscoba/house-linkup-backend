@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const { successResponse } = require("../utils/handleResponse");
+const { successResponse } = require("../../utils/handleResponse");
 const fs = require("fs");
 const yaml = require("js-yaml");
 const config = yaml.load(fs.readFileSync("config.yaml", "utf8"));
