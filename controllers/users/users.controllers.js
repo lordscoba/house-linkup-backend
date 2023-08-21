@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const isValidEmail = require('../../utils/emailValidator');
 const tokenHandler = require('../../utils/handleToken');
 const jwt = require('jsonwebtoken');
+const appData = require('../../utils/variables');
 
 const register = expressAsyncHandler(async (req, res) => {
   try {
@@ -78,6 +79,7 @@ const login = expressAsyncHandler(async (req, res) => {
 const forgotPassword = expressAsyncHandler(async (req, res) => {
   try {
     const { email } = req?.body;
+    // console.log({ email: email });
     const findUserEmail = await UserModel.findOne({ email });
     // console.log({ user: findUserEmail });
     if (!findUserEmail) {
@@ -87,12 +89,13 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
 
     const user = {
       userEmail: findUserEmail?.email,
-      token: generateToken(findUserEmail),
+      token: generateToken.generateToken(findUserEmail),
     };
 
     // forgotPasswordEmail(user);
+    // console.log(`${appData.frontendLink}/reset-password/${user.token}`);
 
-    res.send({
+    return res.send({
       link: ` ${appData.frontendLink}/reset-password/${user.token}`,
       message:
         "A password reset Link has been sent to the email you provided. Check your email inbox but if you can't find it, check your spam folder",
@@ -107,6 +110,7 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
 const resetPassword = expressAsyncHandler(async (req, res) => {
   try {
     const { password, token } = req.body;
+    // console.log({ password, token });
     if (password.split('') < 6) {
       res.status(400);
       throw new Error(
@@ -115,9 +119,10 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await UserModel.findOne({ email: decoded?.email }).select(
-      '-password'
-    );
+    const user = await UserModel.findOne({
+      email: decoded?.fieldToSecure?.email,
+    });
+    // console.log({ pass: user?.password });
     user.password = password;
     const saved = await user.save();
 
