@@ -60,10 +60,13 @@ const activateUser = expressAsyncHandler(async (req, res) => {
     }
 
     user.active = true;
+    user.de_activated = false;
+    user.blocked = false;
     user.save();
-    res
-      .status(200)
-      .json({ message: `${user?.full_name} has is Activated Successfully ` });
+    res.status(200).json({
+      message: `${user?.full_name}  is Activated Successfully `,
+      user,
+    });
   } catch (error) {
     res.status(500).json(error?.message);
   }
@@ -79,10 +82,13 @@ const deActivateUser = expressAsyncHandler(async (req, res) => {
     }
 
     user.de_activated = true;
+    user.active = false;
+    user.blocked = false;
     user.save();
-    res
-      .status(200)
-      .json({ message: `${user?.full_name}  is De-Activated Successfully ` });
+    res.status(200).json({
+      message: `${user?.full_name}  is De-Activated Successfully `,
+      user,
+    });
   } catch (error) {
     res.status(500).json(error?.message);
   }
@@ -97,11 +103,13 @@ const blockUser = expressAsyncHandler(async (req, res) => {
       return res.status(404).json({ message: 'User not Found' });
     }
 
-    user.block = true;
+    user.de_activated = false;
+    user.active = false;
+    user.blocked = true;
     user.save();
     res
       .status(200)
-      .json({ message: `${user?.full_name} is Blocked Successfully ` });
+      .json({ message: `${user?.full_name} is Blocked Successfully `, user });
   } catch (error) {
     res.status(500).json(error?.message);
   }
@@ -123,9 +131,10 @@ const promoteUser = expressAsyncHandler(async (req, res) => {
     }
     user.role = 'Admin';
     user.save();
-    res
-      .status(200)
-      .json({ message: `${user?.full_name} has is Activated Successfully ` });
+    res.status(200).json({
+      message: `${user?.full_name}  is Activated Successfully `,
+      user,
+    });
   } catch (error) {
     res.status(500).json(error?.message);
   }
@@ -147,9 +156,10 @@ const demoteUser = expressAsyncHandler(async (req, res) => {
     }
     user.role = 'User';
     user.save();
-    res
-      .status(200)
-      .json({ message: `${user?.full_name} has is Activated Successfully ` });
+    res.status(200).json({
+      message: `${user?.full_name}  is Activated Successfully `,
+      user,
+    });
   } catch (error) {
     res.status(500).json(error?.message);
   }
