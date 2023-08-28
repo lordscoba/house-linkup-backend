@@ -3,7 +3,7 @@ const {
   login,
   forgotPassword,
   resetPassword,
-} = require('../controllers/users/users.controllers');
+} = require('../controllers/users/auth.controllers');
 const Authrouter = require('express').Router();
 
 Authrouter.post('/register', register);

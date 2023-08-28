@@ -19,7 +19,8 @@ const normalizeCase = require('./utils/nomaliseCase');
 
 // importing Routes
 const healthRoutes = require('./routes/health.routes');
-const userRoutes = require('./routes/users.routes');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 const profileRoutes = require('./routes/profile.routes');
 
 // Running Global middlewares
@@ -49,11 +50,12 @@ app.use('/api/v1/', healthRoutes);
 
 // middleware to reduce to lowercase
 app.use(['/api/v1/login', '/api/v1/signup'], normalizeCase);
-app.use('/api/v1/', userRoutes);
+app.use('/api/v1', authRoutes);
+app.use('/api/v1', userRoutes);
 
 // protected routes
 // app.use(protectUser);
-app.use('/api/v1/', profileRoutes);
+app.use('/api/v1', profileRoutes);
 
 // Error Middlewares
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');

@@ -142,4 +142,9 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { register, login, forgotPassword, resetPassword };
+module.exports = {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+};

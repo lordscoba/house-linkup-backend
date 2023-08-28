@@ -9,7 +9,6 @@ const getUserDetails = expressAsyncHandler(async (req, res) => {
     // console.log({ id: req.params?.id });
 
     const userDetails = await UserModel.findById(userId);
-    console.log({ user: userDetails });
 
     if (!userDetails) {
       return res.status(404).json({ message: 'User Details is empty' });
@@ -24,7 +23,7 @@ const getUserDetails = expressAsyncHandler(async (req, res) => {
 // UPDATE PROFILE
 const updateProfile = expressAsyncHandler(async (req, res) => {
   try {
-    const { id } = req?.params;
+    const userId = req.params.id;
     const { location, phone_number } = req?.body;
     if (!req.files) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -49,7 +48,7 @@ const updateProfile = expressAsyncHandler(async (req, res) => {
       return { url };
     });
 
-    const getUser = await UserModel.findOne({ _id: id });
+    const getUser = await UserModel.findById(userId);
     if (!getUser) {
       return res.status(404).json({ message: 'User Not Found' });
     }
