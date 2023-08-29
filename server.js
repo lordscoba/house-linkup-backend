@@ -25,21 +25,23 @@ const profileRoutes = require('./routes/profile.routes');
 
 // Running Global middlewares
 
-const developmentOrigin = ['http://localhost:3000', 'http://localhost:3001'];
-const productionOrigin = [
-  'https://www.houselinkup.com',
-  'www.houselinkup.com',
-  'houselinkup.com',
-];
+// const developmentOrigin = ['http://localhost:3000', 'http://localhost:3001'];
+// const productionOrigin = [
+//   'https://www.houselinkup.com',
+//   'www.houselinkup.com',
+//   'houselinkup.com',
+// ];
 
-app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? productionOrigin
-        : developmentOrigin,
-  })
-);
+// app.use(
+//   cors({
+//     origin:
+//       process.env.NODE_ENV === 'production'
+//         ? productionOrigin
+//         : developmentOrigin,
+//   })
+// );
+
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
