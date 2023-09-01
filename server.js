@@ -41,7 +41,7 @@ const profileRoutes = require('./routes/profile.routes');
 //   })
 // );
 
-app.use(cors());
+app.use(cors('Access-Control-Allow-Origin', '*'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
