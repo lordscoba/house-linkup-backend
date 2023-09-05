@@ -9,7 +9,7 @@ const appData = require('../../utils/variables');
 
 const register = expressAsyncHandler(async (req, res) => {
   try {
-    const { full_name, email, password } = req?.body;
+    const { full_name, email, password, userName } = req?.body;
 
     const userExist = await UserModel.findOne({ email });
     if (userExist) {
@@ -32,6 +32,7 @@ const register = expressAsyncHandler(async (req, res) => {
       full_name,
       password: passwordHarsh,
       email,
+      userName,
     });
 
     delete newUser?.password;
