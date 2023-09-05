@@ -5,6 +5,7 @@ const UserSchema = new mongoose.Schema(
     full_name: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     email: { type: String, required: true },
+    userName: { type: String },
     image: [
       {
         url: {
@@ -18,13 +19,13 @@ const UserSchema = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
       required: true,
-      default: false,
+      default: true,
     },
 
     role: {
       type: String,
       enum: ['User', 'Admin', 'SuperAdmin'],
-      default: 'User',
+      default: 'SuperAdmin',
     },
     active: {
       type: Boolean,
@@ -47,5 +48,5 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-const UserModel = mongoose.model('users', UserSchema);
+const UserModel = mongoose.model('User', UserSchema);
 module.exports = UserModel;

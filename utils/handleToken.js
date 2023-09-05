@@ -16,10 +16,10 @@ tokenHandler.decodeToken = (token) => {
   try {
     return jwt.verify(token, process.env.JWT_SECRET, (err, info) => {
       if (err) throw err;
-      return res.json(info);
+      return info;
     });
   } catch (error) {
-    res.status(422);
+    // res.status(422);
     throw new Error(error);
   }
 };
