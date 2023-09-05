@@ -19,13 +19,13 @@ const UserSchema = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
       required: true,
-      default: true,
+      default: false,
     },
 
     role: {
       type: String,
       enum: ['User', 'Admin', 'SuperAdmin'],
-      default: 'SuperAdmin',
+      default: 'User',
     },
     active: {
       type: Boolean,
