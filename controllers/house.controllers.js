@@ -6,7 +6,11 @@ const tokenHandler = require('../utils/handleToken');
 const uploadProperty = expressAsyncHandler(async (req, res) => {
   try {
     const {
-      house_location,
+      // house_location,
+      state,
+      city,
+      local_government,
+      description,
       house_type,
       status,
       price,
@@ -42,7 +46,10 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
     const posterId = tokenHandler?.decodeToken(token);
 
     const newProperty = await HouseModel.create({
-      house_location,
+      state,
+      city,
+      local_government,
+      description,
       house_type,
       status,
       price,
