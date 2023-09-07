@@ -3,20 +3,20 @@ const Schema = mongoose.Schema;
 const HouseSchema = new mongoose.Schema(
   {
     // hosue_location: { type: String },
-    state: { type: String },
-    city: { type: String },
-    local_government: { type: String },
-    house_type: { type: String },
-    price: { type: Number },
-    status: { type: String },
-    description: String,
+    state: { type: String, required: true },
+    city: { type: String, required: true },
+    local_government: { type: String, required: true },
+    house_type: { type: String, required: true },
+    price: { type: Number, required: true },
+    status: { type: String, required: true },
+    description: { type: String },
     poster: { type: Schema.Types.ObjectId, ref: 'User' },
 
-    totalNum_ofToilet: { type: Number },
-    totalNum_ofRooms: { type: Number },
-    totalNum_ofKitchen: { type: Number },
-    totalNum_ofBathroom: { type: Number },
-    totalNum_ofParlor: { type: Number },
+    totalNum_ofToilet: { type: Number, required: true },
+    totalNum_ofRooms: { type: Number, required: true },
+    totalNum_ofKitchen: { type: Number, required: true },
+    totalNum_ofBathroom: { type: Number, required: true },
+    totalNum_ofParlor: { type: Number, required: true },
     frontImage: [
       {
         url: {
