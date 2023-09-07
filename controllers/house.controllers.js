@@ -2,6 +2,7 @@ const expressAsyncHandler = require('express-async-handler');
 const handleUpload = require('../utils/upload');
 const HouseModel = require('../models/houseModel');
 const tokenHandler = require('../utils/handleToken');
+const UserModel = require('../models/users.model');
 
 const uploadProperty = expressAsyncHandler(async (req, res) => {
   try {
@@ -317,11 +318,20 @@ const uploadBathroomImage = expressAsyncHandler(async (req, res) => {
   }
 });
 
-// THIS ROUTE GET'S ALL THE UPLOADED HOUSES
+// THIS ROUTE GET'S ALL THE UPLOADED HOUSES BY A USER
 
 const getAllHouse = expressAsyncHandler(async (req, res) => {
   try {
-    const allHouses = await HouseModel.find({})
+    const userId = req.params.id;
+    console.log(userId);
+
+    // Find the user by their ID
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const allHouses = await HouseModel.findById({ _id: userId })
       .populate('poster', ['full_name'])
       .sort({ createdAt: -1 });
 

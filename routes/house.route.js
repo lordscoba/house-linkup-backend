@@ -48,6 +48,6 @@ Houserouter.put(
 
 //END OF UPDATE ROUTES
 
-Houserouter.get('/all-property', getAllHouse);
+Houserouter.get('/all-property/:id', getAllHouse);
 
 module.exports = Houserouter;
