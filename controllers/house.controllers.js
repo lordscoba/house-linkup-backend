@@ -6,7 +6,6 @@ const tokenHandler = require('../utils/handleToken');
 const uploadProperty = expressAsyncHandler(async (req, res) => {
   try {
     const {
-      // house_location,
       state,
       city,
       local_government,
