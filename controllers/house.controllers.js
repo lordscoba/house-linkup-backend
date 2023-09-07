@@ -323,7 +323,7 @@ const uploadBathroomImage = expressAsyncHandler(async (req, res) => {
 const getAllHouse = expressAsyncHandler(async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log(userId);
+    // console.log(userId);
 
     // Find the user by their ID
     const user = await UserModel.findById(userId);
@@ -331,11 +331,13 @@ const getAllHouse = expressAsyncHandler(async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const allHouses = await HouseModel.findById({ _id: userId })
+    const allHouses = await HouseModel.find({})
       .populate('poster', ['full_name'])
       .sort({ createdAt: -1 });
 
-    if (allHouses?.length < 0) {
+    console.log(allHouses);
+
+    if (allHouses?.length < 0 || allHouses === null || allHouses === []) {
       return res.status(400).json({ message: 'No House Found' });
     }
 
