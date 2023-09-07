@@ -331,11 +331,9 @@ const getAllHouse = expressAsyncHandler(async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const allHouses = await HouseModel.find({})
+    const allHouses = await HouseModel.find({ poster: userId })
       .populate('poster', ['full_name'])
       .sort({ createdAt: -1 });
-
-    console.log(allHouses);
 
     if (allHouses?.length < 0 || allHouses === null || allHouses === []) {
       return res.status(400).json({ message: 'No House Found' });
