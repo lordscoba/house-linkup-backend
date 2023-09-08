@@ -17,7 +17,7 @@ const HouseSchema = new mongoose.Schema(
     totalNum_ofKitchen: { type: Number, required: true },
     totalNum_ofBathroom: { type: Number, required: true },
     totalNum_ofParlor: { type: Number, required: true },
-    frontImage: [
+    front_image: [
       {
         url: {
           type: String,

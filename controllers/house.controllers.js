@@ -43,6 +43,8 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
       return { url };
     });
 
+    console.log(imageUrl);
+
     const posterId = tokenHandler?.decodeToken(token);
 
     const newProperty = await HouseModel.create({
@@ -58,7 +60,7 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
       totalNum_ofKitchen,
       totalNum_ofBathroom,
       totalNum_ofParlor,
-      frontImage: imageUrl,
+      front_image: imageUrl,
       poster: posterId?.fieldToSecure?.id,
     });
 
@@ -323,8 +325,6 @@ const uploadBathroomImage = expressAsyncHandler(async (req, res) => {
 const getAllHouse = expressAsyncHandler(async (req, res) => {
   try {
     const userId = req.params.id;
-    // console.log(userId);
-
     // Find the user by their ID
     const user = await UserModel.findById(userId);
 
@@ -335,7 +335,7 @@ const getAllHouse = expressAsyncHandler(async (req, res) => {
       .populate('poster', ['full_name'])
       .sort({ createdAt: -1 });
 
-    if (allHouses?.length < 0 || allHouses === null || allHouses === []) {
+    if (allHouses?.length < 0 || allHouses === null) {
       return res.status(400).json({ message: 'No House Found' });
     }
 

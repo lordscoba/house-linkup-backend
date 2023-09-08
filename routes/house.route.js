@@ -11,11 +11,7 @@ const upload = require('../config/file');
 
 const Houserouter = require('express').Router();
 
-Houserouter.post(
-  '/upload-property',
-  upload.array('front_image'),
-  uploadProperty
-);
+Houserouter.post('/upload-property', upload.array('image'), uploadProperty);
 
 // UPDATE ROUTES
 
