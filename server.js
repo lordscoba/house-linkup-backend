@@ -44,7 +44,7 @@ const houseRoutes = require('./routes/house.route');
 
 const corsOptions = {
   origin: [
-    'http://localhost:8080',
+    'http://localhost:3000',
     'https://www.houselinkup.com',
     'www.houselinkup.com',
     'houselinkup.com',
