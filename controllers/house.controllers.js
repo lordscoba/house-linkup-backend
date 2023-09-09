@@ -8,6 +8,7 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
   try {
     const {
       state,
+      address,
       city,
       local_government,
       description,
@@ -27,6 +28,7 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
     }
 
     let files = req?.files;
+    console.log({ files: files });
 
     let multiplePicturePromise = files.map(async (picture, index) => {
       const b64 = Buffer.from(picture.buffer).toString('base64');
@@ -34,22 +36,22 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
       const cldRes = await handleUpload(dataURI, index);
       return cldRes;
     });
-
+    console.log(multiplePicturePromise);
     // BELOW RETURNS THE RESOLVED PROMISE OF MULTIPLEPICTUREPROMISE AS AN ARRAY OF OBJECT
     // THAT CAN BE MAPPED
     const imageResponse = await Promise.all(multiplePicturePromise);
     const imageUrl = imageResponse.map((image) => {
+      console.log(image);
       const url = image.secure_url;
       return { url };
     });
-
-    console.log(imageUrl);
 
     const posterId = tokenHandler?.decodeToken(token);
 
     const newProperty = await HouseModel.create({
       state,
       city,
+      address,
       local_government,
       description,
       house_type,
@@ -73,6 +75,7 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
       .json({ newProperty, message: 'Property uploaded successfully' });
   } catch (error) {
     res.status(500).json(error?.message);
+    console.log(error);
   }
 });
 

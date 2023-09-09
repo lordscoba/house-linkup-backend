@@ -11,12 +11,12 @@ const upload = require('../config/file');
 
 const Houserouter = require('express').Router();
 
-Houserouter.post('/upload-property', upload.array('image'), uploadProperty);
+Houserouter.post('/upload-property', upload.array('file'), uploadProperty);
 
 // UPDATE ROUTES
 
 Houserouter.put(
-  '/update-property',
+  '/update-property/front-image',
   upload.array('front_image'),
   updateProperty
 );
