@@ -9,7 +9,10 @@ const appData = require('../../utils/variables');
 
 const register = expressAsyncHandler(async (req, res) => {
   try {
-    const { full_name, email, password, userName } = req?.body;
+    const email = req.body.email.toLowerCase().trim();
+    const full_name = req.body.full_name.toLowerCase().trim();
+    const userName = req.body.userName.toLowerCase().trim();
+    const password = req.body.password.toLowerCase().trim();
 
     const userExist = await UserModel.findOne({ email });
     if (userExist) {
@@ -45,7 +48,8 @@ const register = expressAsyncHandler(async (req, res) => {
 
 const login = expressAsyncHandler(async (req, res) => {
   try {
-    const { email, password } = req?.body;
+    const email = req.body.email.toLowerCase().trim();
+    const password = req.body.password.toLowerCase().trim();
 
     // VALIDATE EMAIL
     if (!isValidEmail(email)) {

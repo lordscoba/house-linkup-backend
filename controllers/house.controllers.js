@@ -28,7 +28,6 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
     }
 
     let files = req?.files;
-    console.log({ files: files });
 
     let multiplePicturePromise = files.map(async (picture, index) => {
       const b64 = Buffer.from(picture.buffer).toString('base64');
@@ -36,7 +35,6 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
       const cldRes = await handleUpload(dataURI, index);
       return cldRes;
     });
-    console.log(multiplePicturePromise);
     // BELOW RETURNS THE RESOLVED PROMISE OF MULTIPLEPICTUREPROMISE AS AN ARRAY OF OBJECT
     // THAT CAN BE MAPPED
     const imageResponse = await Promise.all(multiplePicturePromise);

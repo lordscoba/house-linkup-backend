@@ -23,6 +23,7 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const profileRoutes = require('./routes/profile.routes');
 const houseRoutes = require('./routes/house.route');
+const locationRoutes = require('./routes/location.routes');
 
 // Running Global middlewares
 
@@ -53,7 +54,7 @@ const corsOptions = {
   allowedHeaders: 'Content-Type,Authorization', // Allowed headers
   credentials: true, // Allow credentials (cookies, etc.)
   preflightContinue: false, // Disable preflight checks
-  optionsSuccessStatus: 204, // Set the status for OPTIONS requests
+  optionsSuccessStatus: 200, // Set the status for OPTIONS requests
 };
 
 // Apply the custom CORS middleware with the defined options
@@ -69,10 +70,11 @@ app.use(cookieParser());
 app.use('/api/v1/', healthRoutes);
 
 // middleware to reduce to lowercase
-app.use(['/api/v1/login', '/api/v1/signup'], normalizeCase);
+
 app.use('/api/v1', authRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', houseRoutes);
+app.use('/api/v1', locationRoutes);
 
 // protected routes
 // app.use(protectUser);
