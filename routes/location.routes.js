@@ -18,7 +18,7 @@ Locationrouter.post('/add-local-gov/:documentId', addLocalGovernment);
 Locationrouter.post('/add-town/:documentId', addTowns);
 // del state
 Locationrouter.delete('/delete-region/:documentId', deleteRegion);
-Locationrouter.delete('/delete-state/:documentId', delState);
+Locationrouter.delete('/delete-state', delState);
 Locationrouter.delete('/delete-local-gov/:documentId', deleteLocalGov);
 Locationrouter.delete('/delete-town/:documentId', deleteTown);
 Locationrouter.get('/all-regions', getAllState);

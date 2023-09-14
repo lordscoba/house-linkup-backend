@@ -23,7 +23,7 @@ const createNewRegion = expressAsyncHandler(async (req, res) => {
   }
 });
 
-// UPDATE
+// UPDATE / ADD STATE
 const updateState = expressAsyncHandler(async (req, res) => {
   try {
     const documentId = req.params.documentId;
@@ -33,7 +33,10 @@ const updateState = expressAsyncHandler(async (req, res) => {
     if (!document) {
       return res.status(404).json({ message: 'Document not found' });
     }
-
+    const check = document?.states?.find((x) => x?.state === state);
+    if (check) {
+      return res.status(404).json({ message: 'State Already Exist' });
+    }
     const value = {
       _id: newObjectId.toString(),
       state,
@@ -69,7 +72,7 @@ const addLocalGovernment = expressAsyncHandler(async (req, res) => {
     };
 
     // CHECK IF THE NEW FIELD EXIST
-    const check = document?.states[0].local_government?.find(
+    const check = findState?.local_government?.find(
       (x) => x.local_government_name === local_government_name
     );
     if (check) {
@@ -162,10 +165,11 @@ const deleteRegion = expressAsyncHandler(async (req, res) => {
   }
 });
 
+// DELETE STATE
+
 const delState = expressAsyncHandler(async (req, res) => {
   try {
-    const documentId = req.params.documentId;
-    const { stateId } = req?.body;
+    const { documentId, stateId } = req?.query;
 
     // FIND THE REGION OR COUNTRY
     const document = await State.findById({ _id: documentId });
@@ -302,7 +306,7 @@ const deleteTown = expressAsyncHandler(async (req, res) => {
   }
 });
 
-// GET ALL
+// GET ALL REGIONS
 const getAllState = expressAsyncHandler(async (req, res) => {
   try {
     const states = await State.find({});
