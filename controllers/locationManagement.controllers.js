@@ -205,18 +205,22 @@ const delState = expressAsyncHandler(async (req, res) => {
 
 const deleteLocalGov = expressAsyncHandler(async (req, res) => {
   try {
-    const documentId = req.params.documentId;
-    const { local_govId } = req?.body;
+    const { documentId, stateId, localGovId } = req?.query;
+
     // FIND THE REGION OR COUNTRY
     let document = await State.findById({ _id: documentId });
     if (!document) {
       return res.status(404).json({ message: 'Not Found' });
     }
 
-    // GET THE INDEX OF THE LOCAL GOV TO DEL
-    const localGovIndex = document?.states[0]?.local_government?.findIndex(
-      (item) => item.id === local_govId
+    const stateIndex = document?.states?.findIndex(
+      (x) => JSON.stringify(x?._id) === JSON.stringify(stateId)
     );
+
+    // GET THE INDEX OF THE LOCAL GOV TO DEL
+    const localGovIndex = document?.states[
+      stateIndex
+    ]?.local_government?.findIndex((item) => item.id === localGovId);
 
     if (localGovIndex === -1) {
       return res.status(404).json({ message: 'Local Government not found' });
@@ -307,7 +311,7 @@ const deleteTown = expressAsyncHandler(async (req, res) => {
 });
 
 // GET ALL REGIONS
-const getAllState = expressAsyncHandler(async (req, res) => {
+const getAllCountry = expressAsyncHandler(async (req, res) => {
   try {
     const states = await State.find({});
 
@@ -321,10 +325,123 @@ const getAllState = expressAsyncHandler(async (req, res) => {
   }
 });
 
+// GET REGION BY ID
+/************/
+/************/
+/************/
+/************/
+
+const fetchRegionById = expressAsyncHandler(async (req, res) => {
+  try {
+    const countryId = req?.params?.countryId;
+    const country = await State.findById({ _id: countryId });
+    if (!country) {
+      return res.status(404).json({ message: 'No Country Found' });
+    }
+
+    res.status(200).json({ country });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
+
+// GET LOCAL_GOV BY ID
+/************/
+/************/
+/************/
+/************/
+
+const findLocalGovById = expressAsyncHandler(async (req, res) => {
+  try {
+    const countryId = req?.params?.id;
+    const stateId = req?.body?.state_id;
+
+    const allRegions = await State.findById(countryId);
+    if (!allRegions) {
+      return res.status(404).json({ message: 'Not Found' });
+    }
+
+    // FIND STATE INDEX
+    const stateIndex = allRegions?.states?.findIndex(
+      (item) => item.id === stateId
+    );
+
+    if (stateIndex === -1) {
+      return res.status(404).json({ message: 'State not found' });
+    }
+
+    // FIND LOCAL GOV
+    const localGov = allRegions?.states[stateIndex]?.local_government;
+    const countryName = allRegions?.region;
+
+    res.status(200).json({
+      message: 'Fetched Successfuly',
+      LGA: localGov,
+      country: countryName,
+    });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
+
+// GET TOWNS BY ID
+/************/
+/************/
+/************/
+/************/
+
+const findTownsById = expressAsyncHandler(async (req, res) => {
+  try {
+    const countryId = req?.params?.id;
+    const { state_id, local_govId } = req?.body;
+
+    const allRegions = await State.findById(countryId);
+    if (!allRegions) {
+      return res.status(404).json({ message: 'Not Found' });
+    }
+
+    // FIND STATE INDEX
+    const stateIndex = allRegions?.states?.findIndex(
+      (item) => item.id === state_id
+    );
+
+    if (stateIndex === -1) {
+      return res.status(404).json({ message: 'State not found' });
+    }
+
+    const countryName = allRegions?.region;
+    // GET THE INDEX OF THE LOCAL INDEX
+    const localGovIndex = allRegions?.states[
+      stateIndex
+    ]?.local_government?.findIndex((item) => item.id === local_govId);
+
+    if (localGovIndex === -1) {
+      return res.status(404).json({ message: 'Local Government not found' });
+    }
+
+    const localGovName =
+      allRegions.states[stateIndex]?.local_government[localGovIndex]
+        ?.local_government_name;
+
+    const towns =
+      allRegions?.states[stateIndex]?.local_government[localGovIndex]?.towns;
+
+    res.status(200).json({
+      message: 'Fetched Successfuly',
+      Towns: towns,
+      LGA_NAME: localGovName,
+      country: countryName,
+    });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
+
 module.exports = {
   createNewRegion,
   updateState,
-  getAllState,
+  getAllCountry,
+  fetchRegionById,
   addLocalGovernment,
   addTowns,
   //
@@ -332,4 +449,6 @@ module.exports = {
   delState,
   deleteLocalGov,
   deleteTown,
+  findLocalGovById,
+  findTownsById,
 };
