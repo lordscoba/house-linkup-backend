@@ -438,6 +438,139 @@ const findTownsById = expressAsyncHandler(async (req, res) => {
     res.status(500).json(error?.message);
   }
 });
+// UPDATE STATE
+/************/
+/************/
+/************/
+/************/
+
+const changeState = expressAsyncHandler(async (req, res) => {
+  try {
+    const { documentId, stateId } = req.query;
+    const { state_name } = req?.body;
+    const document = await State.findById({ _id: documentId });
+
+    if (!document) {
+      return res.status(404).json({ message: 'Not Found' });
+    }
+
+    const stateIndex = document?.states.findIndex(
+      (item) => item.id === stateId
+    );
+
+    if (stateIndex === -1) {
+      return res.status(404).json({ message: 'State not found' });
+    }
+
+    document.states[stateIndex].state = state_name;
+    document.save();
+
+    res.status(200).json({
+      message: `${document?.states[stateIndex]?.state} is Updated successfully`,
+    });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
+
+// UPDATE LGA
+/************/
+/************/
+/************/
+/************/
+
+const changeLga = expressAsyncHandler(async (req, res) => {
+  try {
+    const { documentId, stateId, localGovId } = req.query;
+    const { local_gov_name } = req?.body;
+    const document = await State.findById({ _id: documentId });
+
+    if (!document) {
+      return res.status(404).json({ message: 'Not Found' });
+    }
+
+    const stateIndex = document?.states.findIndex(
+      (item) => item.id === stateId
+    );
+
+    if (stateIndex === -1) {
+      return res.status(404).json({ message: 'State not found' });
+    }
+
+    const lgaIndex = document?.states[stateIndex].local_government.findIndex(
+      (item) => item.id === localGovId
+    );
+
+    if (lgaIndex === -1) {
+      return res.status(404).json({ message: 'Local Government not found' });
+    }
+
+    document.states[stateIndex].local_government[
+      lgaIndex
+    ].local_government_name = local_gov_name;
+    document.save();
+
+    res.status(200).json({
+      message: `${document.states[stateIndex].local_government[lgaIndex].local_government_name} is Updated successfully`,
+    });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
+
+// UPDATE STATE
+/************/
+/************/
+/************/
+/************/
+
+const changeTown = expressAsyncHandler(async (req, res) => {
+  try {
+    const { documentId, stateId, localGovId, townId } = req.query;
+    const { town_name } = req?.body;
+    const document = await State.findById({ _id: documentId });
+
+    if (!document) {
+      return res.status(404).json({ message: 'Not Found' });
+    }
+
+    const stateIndex = document?.states.findIndex(
+      (item) => item.id === stateId
+    );
+
+    if (stateIndex === -1) {
+      return res.status(404).json({ message: 'State not found' });
+    }
+
+    const lgaIndex = document?.states[stateIndex].local_government.findIndex(
+      (item) => item.id === localGovId
+    );
+
+    if (lgaIndex === -1) {
+      return res.status(404).json({ message: 'Local Government not found' });
+    }
+
+    const townIndex = document?.states[stateIndex].local_government[
+      lgaIndex
+    ].towns.findIndex((item) => item.id === townId);
+
+    if (townIndex === -1) {
+      return res.status(404).json({ message: 'Local Government not found' });
+    }
+
+    document.states[stateIndex].local_government[lgaIndex].towns[
+      townIndex
+    ].town_name = town_name;
+
+    document.save();
+
+    res.status(200).json({
+      message: `${document?.states[stateIndex].local_government[lgaIndex].towns[townIndex].town_name} is Updated successfully`,
+    });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
 
 module.exports = {
   createNewRegion,
@@ -453,4 +586,8 @@ module.exports = {
   deleteTown,
   findLocalGovById,
   findTownsById,
+  // update
+  changeState,
+  changeLga,
+  changeTown,
 };

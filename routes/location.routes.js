@@ -12,6 +12,9 @@ const {
   fetchRegionById,
   findLocalGovById,
   findTownsById,
+  changeState,
+  changeLga,
+  changeTown,
 } = require('../controllers/locationManagement.controllers');
 
 const Locationrouter = require('express').Router();
@@ -29,5 +32,9 @@ Locationrouter.get('/all-regions', getAllCountry);
 Locationrouter.get('/all-regions/:countryId', fetchRegionById);
 Locationrouter.get('/all-local-gov/:id', findLocalGovById);
 Locationrouter.get('/all-towns/:id', findTownsById);
+// update
+Locationrouter.put('/update-state', changeState);
+Locationrouter.put('/update-local-gov', changeLga);
+Locationrouter.put('/update-town', changeTown);
 
 module.exports = Locationrouter;
