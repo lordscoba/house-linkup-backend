@@ -93,8 +93,8 @@ const addLocalGovernment = expressAsyncHandler(async (req, res) => {
 // UPDATE TOWNS
 const addTowns = expressAsyncHandler(async (req, res) => {
   try {
-    const documentId = req.params.documentId;
-    const { local_govId, stateId, town_name } = req?.body;
+    const { local_govId, stateId, documentId } = req?.query;
+    const { town_name } = req?.body;
     // FIND THE REGION
     const document = await State.findById({ _id: documentId });
     if (!document) {
@@ -150,7 +150,7 @@ const addTowns = expressAsyncHandler(async (req, res) => {
 // DELETE REGION
 const deleteRegion = expressAsyncHandler(async (req, res) => {
   try {
-    const documentId = req.params.documentId;
+    const { documentId } = req.query;
     const document = await State.findById({ _id: documentId });
     if (!document) {
       return res.status(404).json({ message: 'Not Found' });
@@ -229,11 +229,11 @@ const deleteLocalGov = expressAsyncHandler(async (req, res) => {
     // EXTRACT THE LOCAL GOV NAME TO BE DELETED
     // THIS IS USED TO SEND RESPONSE TO FRONTEND, SPECIFYING THE PARTICULAR STATE DELETED
     const LGAName =
-      document?.states[0]?.local_government[localGovIndex]
+      document?.states[stateIndex]?.local_government[localGovIndex]
         ?.local_government_name;
 
     // Remove the sub-array at the specified index using splice
-    document?.states[0]?.local_government?.splice(localGovIndex, 1);
+    document?.states[stateIndex]?.local_government?.splice(localGovIndex, 1);
     document.save();
     res.status(200).json({
       message: `${LGAName} state has been deleted`,
@@ -248,8 +248,10 @@ const deleteLocalGov = expressAsyncHandler(async (req, res) => {
 
 const deleteTown = expressAsyncHandler(async (req, res) => {
   try {
-    const documentId = req.params.documentId;
-    const { townId, stateId, local_govId } = req?.body;
+    // const documentId = req.params.documentId;
+    // const { townId, stateId, local_govId } = req?.body;
+    const { documentId, stateId, local_govId, townId } = req?.query;
+
     // FIND THE REGION OR COUNTRY
     let document = await State.findById({ _id: documentId });
     if (!document) {
