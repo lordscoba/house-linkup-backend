@@ -15,6 +15,11 @@ const createNewRegion = expressAsyncHandler(async (req, res) => {
       },
     };
 
+    const findRegion = await State.findOne({ region });
+    if (findRegion) {
+      return res.status(400).json({ message: 'Country Already Exist' });
+    }
+
     const newData = new State(value);
     await newData.save();
     res.status(201).json(newData);
