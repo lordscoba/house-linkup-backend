@@ -11,8 +11,9 @@ const register = expressAsyncHandler(async (req, res) => {
   try {
     const email = req.body.email.toLowerCase().trim();
     const full_name = req.body.full_name.toLowerCase().trim();
-    const userName = req.body.userName.toLowerCase().trim();
+    // const userName = req.body.userName.toLowerCase().trim();
     const password = req.body.password.toLowerCase().trim();
+    const username = req.body.username.toLowerCase().trim();
 
     const userExist = await UserModel.findOne({ email });
     if (userExist) {
@@ -35,7 +36,7 @@ const register = expressAsyncHandler(async (req, res) => {
       full_name,
       password: passwordHarsh,
       email,
-      userName,
+      username,
     });
 
     delete newUser?.password;
