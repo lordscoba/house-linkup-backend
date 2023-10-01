@@ -24,7 +24,7 @@ const getUserDetails = expressAsyncHandler(async (req, res) => {
 const updateProfile = expressAsyncHandler(async (req, res) => {
   try {
     const userId = req.params.id;
-    const { location, phone_number } = req?.body;
+    const { location, phone_number, username } = req?.body;
     if (!req.files) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -49,12 +49,15 @@ const updateProfile = expressAsyncHandler(async (req, res) => {
     });
 
     const getUser = await UserModel.findById(userId);
+
+    // console.log({ uu: getUser, userId });
     if (!getUser) {
       return res.status(404).json({ message: 'User Not Found' });
     }
 
     (getUser.image = imageUrl), (getUser.location = location);
     getUser.phone_number = phone_number;
+    getUser.username = username;
 
     getUser.save();
     return res
