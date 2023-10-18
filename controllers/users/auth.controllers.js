@@ -129,7 +129,10 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
       email: decoded?.fieldToSecure?.email,
     });
     // console.log({ pass: user?.password });
-    user.password = password;
+    // HASH PASSWORD
+    const salt = await bcrypt.genSalt();
+    const passwordHarsh = await bcrypt.hash(password, salt);
+    user.password = passwordHarsh;
     const saved = await user.save();
 
     if (!saved) {
