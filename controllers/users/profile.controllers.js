@@ -25,12 +25,43 @@ const updateProfile = expressAsyncHandler(async (req, res) => {
   try {
     const userId = req.params.id;
     const { location, phone_number, username } = req?.body;
+
+    const getUser = await UserModel.findById(userId);
+
+    // console.log({ uu: getUser, userId });
+    if (!getUser) {
+      return res.status(404).json({ message: 'User Not Found' });
+    }
+
+    getUser.location = location;
+    getUser.phone_number = phone_number;
+    getUser.username = username;
+
+    getUser.save();
+    return res
+      .status(200)
+      .json({ message: 'Profile updated successfully', getUser });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
+
+// CHANGE PROFILE PICTURE
+
+const changeProfile = expressAsyncHandler(async (req, res) => {
+  try {
+    const loggedInUser = req?.body?.userId;
+
+    const User = await UserModel.findById(loggedInUser);
+
+    // console.log({ uu: getUser, userId });
+    if (!User) {
+      return res.status(404).json({ message: 'User Not Found' });
+    }
     if (!req.files) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // Upload image to Cloudinary
-    // 64d944889c9f98bd62b40e74
     let files = req?.files;
 
     let multiplePicturePromise = files.map(async (picture, index) => {
@@ -48,24 +79,15 @@ const updateProfile = expressAsyncHandler(async (req, res) => {
       return { url };
     });
 
-    const getUser = await UserModel.findById(userId);
+    User.image = imageUrl;
 
-    // console.log({ uu: getUser, userId });
-    if (!getUser) {
-      return res.status(404).json({ message: 'User Not Found' });
-    }
-
-    (getUser.image = imageUrl), (getUser.location = location);
-    getUser.phone_number = phone_number;
-    getUser.username = username;
-
-    getUser.save();
+    await User.save();
     return res
       .status(200)
-      .json({ message: 'Profile updated successfully', getUser });
+      .json({ message: 'Profile updated successfully', User });
   } catch (error) {
     res.status(500).json(error?.message);
   }
 });
 
-module.exports = { getUserDetails, updateProfile };
+module.exports = { getUserDetails, updateProfile, changeProfile };

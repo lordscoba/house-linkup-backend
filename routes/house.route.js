@@ -8,10 +8,11 @@ const {
   updateProperty,
 } = require('../controllers/house.controllers');
 const upload = require('../config/file');
+const { verifyToken } = require('../utils/handleToken');
 
 const Houserouter = require('express').Router();
 
-Houserouter.post('/upload-property', upload.array('file'), uploadProperty);
+Houserouter.post('/upload-property', upload.array('image'), uploadProperty);
 
 // UPDATE ROUTES
 

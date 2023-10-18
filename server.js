@@ -43,22 +43,6 @@ const locationRoutes = require('./routes/location.routes');
 //   })
 // );
 
-// const corsOptions = {
-//   origin: [
-//     'http://localhost:3000',
-//     'https://www.houselinkup.com',
-//     'www.houselinkup.com',
-//     'houselinkup.com',
-//   ], // List of allowed origins
-//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed HTTP methods
-//   allowedHeaders: 'Content-Type,Authorization', // Allowed headers
-//   credentials: true, // Allow credentials (cookies, etc.)
-//   preflightContinue: false, // Disable preflight checks
-//   optionsSuccessStatus: 200, // Set the status for OPTIONS requests
-// };
-
-// Apply the custom CORS middleware with the defined options
-// app.use(cors(corsOptions));
 app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: true }));

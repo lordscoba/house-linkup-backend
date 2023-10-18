@@ -1,7 +1,7 @@
 const expressAsyncHandler = require('express-async-handler');
 const handleUpload = require('../utils/upload');
 const HouseModel = require('../models/houseModel');
-const tokenHandler = require('../utils/handleToken');
+const { tokenHandler } = require('../utils/handleToken');
 const UserModel = require('../models/users.model');
 
 const uploadProperty = expressAsyncHandler(async (req, res) => {
@@ -9,7 +9,9 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
     const {
       state,
       address,
-      city,
+      town,
+      poster_phone_number,
+      poster_email,
       local_government,
       description,
       house_type,
@@ -28,6 +30,7 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
     }
 
     let files = req?.files;
+    console.log({ f: files, state });
 
     let multiplePicturePromise = files.map(async (picture, index) => {
       const b64 = Buffer.from(picture.buffer).toString('base64');
@@ -39,7 +42,6 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
     // THAT CAN BE MAPPED
     const imageResponse = await Promise.all(multiplePicturePromise);
     const imageUrl = imageResponse.map((image) => {
-      console.log(image);
       const url = image.secure_url;
       return { url };
     });
@@ -48,11 +50,13 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
 
     const newProperty = await HouseModel.create({
       state,
-      city,
       address,
       local_government,
+      town,
       description,
       house_type,
+      poster_phone_number,
+      poster_email,
       status,
       price,
       totalNum_ofToilet,
@@ -60,9 +64,10 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
       totalNum_ofKitchen,
       totalNum_ofBathroom,
       totalNum_ofParlor,
-      front_image: imageUrl,
+      image: imageUrl,
       poster: posterId?.fieldToSecure?.id,
     });
+    // console.log({ ne: newProperty });
 
     if (!newProperty) {
       return res.status(401).json({ message: 'Something went wrong' });
