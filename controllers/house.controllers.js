@@ -30,7 +30,6 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
     }
 
     let files = req?.files;
-    console.log({ f: files, state });
 
     let multiplePicturePromise = files.map(async (picture, index) => {
       const b64 = Buffer.from(picture.buffer).toString('base64');
@@ -78,93 +77,135 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
       .json({ newProperty, message: 'Property uploaded successfully' });
   } catch (error) {
     res.status(500).json(error?.message);
-    console.log(error);
   }
 });
 
-// UPDATE HOUSE
+// GET UPLOADED HOUSE BY USERID
 
-const updateProperty = expressAsyncHandler(async (req, res) => {
+const getUserHouse = expressAsyncHandler(async (req, res) => {
   try {
-    const houseId = req.params.id;
+    const userId = req?.user?._id;
+
+    const allUploadedProperty = await HouseModel.find({
+      poster: userId,
+    }).populate('poster', ['_id']);
+
+    const count = await HouseModel.countDocuments();
+    const filteredNumber = allUploadedProperty?.length;
+
+    res.status(200).json({
+      mapArray: allUploadedProperty,
+      docs: count,
+      num: filteredNumber,
+    });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
+
+// DELTE UPLOADED HOUSE BY USERID
+const deleteHouseByUser = expressAsyncHandler(async (req, res) => {
+  try {
+    const userId = req?.user?._id;
+    const id = req?.query?.houseId;
+    const houseToDelete = await HouseModel.findById(id).populate('poster', [
+      '_id',
+    ]);
+
+    // CHECK THE UPLOADER
+
+    const isUploader = Boolean(
+      houseToDelete?.poster?._id?.toString() === userId
+    );
+
+    // const poster = houseToDelete?.poster?._id;
+    // console.log({ user: userId, poster: typeof poster });
+    if (!isUploader) {
+      return res.status(400).json({ message: 'UnAuthorised user' });
+    }
+
+    houseToDelete.deleteOne();
+    res.status(200).json({ message: 'House deleted Successfully' });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
+
+// UPDATE UPLOADED HOUSE BY USERID
+const updateHouse = expressAsyncHandler(async (req, res) => {
+  try {
+    const userId = req?.user?._id;
+    // const id = req?.query?.houseId;
     const {
-      house_location,
+      houseId,
+      address,
+      state,
+      local_government,
+      town,
       house_type,
-      status,
       price,
+      description,
+      poster_email,
       totalNum_ofToilet,
       totalNum_ofRooms,
       totalNum_ofKitchen,
       totalNum_ofBathroom,
       totalNum_ofParlor,
-      token,
     } = req?.body;
-    const getProperty = await HouseModel.findById(houseId);
-    const posterId = tokenHandler?.decodeToken(token);
+    const houseToUpdate = await HouseModel.findById(houseId).populate(
+      'poster',
+      ['_id']
+    );
 
-    if (
-      JSON.stringify(getProperty?.poster) !==
-      JSON.stringify(posterId?.fieldToSecure?.id)
-    ) {
-      return res.status(400).json({ message: 'UnAurhorized User' });
+    const isUploader = Boolean(
+      houseToUpdate?.poster?._id?.toString() === userId
+    );
+
+    // CHECK THE UPLOADER
+    if (!isUploader) {
+      return res.status(400).json({ message: 'UnAuthorised user' });
     }
 
-    if (!getProperty) {
-      return res.status(404).json({ message: 'No Property Found' });
-    }
+    houseToUpdate.address = address;
+    houseToUpdate.state = state;
+    houseToUpdate.local_government = local_government;
+    houseToUpdate.town = town;
+    houseToUpdate.house_type = house_type;
+    houseToUpdate.price = price;
+    houseToUpdate.description = description;
+    houseToUpdate.poster_email = poster_email;
+    houseToUpdate.totalNum_ofToilet = totalNum_ofToilet;
+    houseToUpdate.totalNum_ofRooms = totalNum_ofRooms;
+    houseToUpdate.totalNum_ofKitchen = totalNum_ofKitchen;
+    houseToUpdate.totalNum_ofBathroom = totalNum_ofBathroom;
+    houseToUpdate.totalNum_ofParlor = totalNum_ofParlor;
 
-    if (!req.files) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    let files = req?.files;
-
-    let multiplePicturePromise = files.map(async (picture, index) => {
-      const b64 = Buffer.from(picture.buffer).toString('base64');
-      let dataURI = 'data:' + picture.mimetype + ';base64,' + b64;
-      const cldRes = await handleUpload(dataURI, index);
-      return cldRes;
-    });
-
-    // BELOW RETURNS THE RESOLVED PROMISE OF MULTIPLEPICTUREPROMISE AS AN ARRAY OF OBJECT
-    // THAT CAN BE MAPPED
-    const imageResponse = await Promise.all(multiplePicturePromise);
-    const imageUrl = imageResponse.map((image) => {
-      const url = image.secure_url;
-      return { url };
-    });
-
-    getProperty.hosue_location = house_location;
-    getProperty.house_type = house_type;
-    getProperty.status = status;
-    getProperty.price = price;
-    getProperty.totalNum_ofToilet = totalNum_ofToilet;
-    getProperty.totalNum_ofRooms = totalNum_ofRooms;
-    getProperty.totalNum_ofKitchen = totalNum_ofKitchen;
-    getProperty.totalNum_ofBathroom = totalNum_ofBathroom;
-    getProperty.totalNum_ofParlor = totalNum_ofParlor;
-    getProperty.kitchen_image = imageUrl;
-
-    getProperty?.save();
-    res
-      .status(200)
-      .json({ message: 'Kitchen Image Updated Successfuly', getProperty });
+    await houseToUpdate.save();
+    res.status(200).json({ message: 'House Updated Successfully' });
   } catch (error) {
     res.status(500).json(error?.message);
   }
 });
 
-// UPDATE KITCHEN IMAGE
+// UPDATE UPLOADED HOUSE IMAGE
 
-const uploadKitchenImage = expressAsyncHandler(async (req, res) => {
+const updateHouseImage = expressAsyncHandler(async (req, res) => {
   try {
-    const houseId = req.params.id;
-    const getProperty = await HouseModel.findById(houseId);
+    const userId = req?.user?._id;
+    const { imageId, houseId } = req?.body;
+    const houseToUpdate = await HouseModel.findById(houseId).populate(
+      'poster',
+      ['_id']
+    );
 
-    if (!getProperty) {
-      return res.status(404).json({ message: 'No Property Found' });
+    const isUploader = Boolean(
+      houseToUpdate?.poster?._id?.toString() === userId
+    );
+
+    // CHECK THE UPLOADER
+    if (!isUploader) {
+      return res.status(400).json({ message: 'UnAuthorised user' });
     }
-
     if (!req.files) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -177,7 +218,6 @@ const uploadKitchenImage = expressAsyncHandler(async (req, res) => {
       const cldRes = await handleUpload(dataURI, index);
       return cldRes;
     });
-
     // BELOW RETURNS THE RESOLVED PROMISE OF MULTIPLEPICTUREPROMISE AS AN ARRAY OF OBJECT
     // THAT CAN BE MAPPED
     const imageResponse = await Promise.all(multiplePicturePromise);
@@ -186,141 +226,57 @@ const uploadKitchenImage = expressAsyncHandler(async (req, res) => {
       return { url };
     });
 
-    getProperty.kitchen_image = imageUrl;
+    // FIND IMAGE INDEX
+    const imageIndex = houseToUpdate?.image?.findIndex(
+      (x) => x?._id.toString() === imageId
+    );
 
-    getProperty?.save();
+    if (imageIndex === -1) {
+      return res.status(404).json({ message: 'Image Not Found' });
+    }
+
+    const url = imageUrl[0]?.url;
+
+    houseToUpdate.image[imageIndex].url = url;
+    houseToUpdate.save();
     res
       .status(200)
-      .json({ message: 'Kitchen Image Updated Successfuly', getProperty });
+      .json({ message: 'Image Updated Successfully', houseToUpdate });
   } catch (error) {
     res.status(500).json(error?.message);
   }
 });
 
-// UPDATE PARLOR IMAGE
-
-const uploadParlorImage = expressAsyncHandler(async (req, res) => {
+// DELETE UPLOADED HOUSE IMAGE
+const deleteHouseImage = expressAsyncHandler(async (req, res) => {
   try {
-    const houseId = req.params.id;
-    const getProperty = await HouseModel.findById(houseId);
+    const userId = req?.user?._id;
+    const { imageId } = req?.body;
+    const houseToUpdate = await HouseModel.findById(houseId).populate(
+      'poster',
+      ['_id']
+    );
 
-    if (!getProperty) {
-      return res.status(404).json({ message: 'No Property Found' });
+    const isUploader = Boolean(
+      houseToUpdate?.poster?._id?.toString() === userId
+    );
+
+    // CHECK THE UPLOADER
+    if (!isUploader) {
+      return res.status(400).json({ message: 'UnAuthorised user' });
     }
 
-    if (!req.files) {
-      return res.status(400).json({ error: 'No file uploaded' });
+    // FIND IMAGE INDEX
+    const imageIndex = houseToUpdate?.image?.findIndex(
+      (x) => x?._id === imageId
+    );
+    if (imageIndex === -1) {
+      return res.status(404).json({ message: 'Image Not Found' });
     }
 
-    let files = req?.files;
-
-    let multiplePicturePromise = files.map(async (picture, index) => {
-      const b64 = Buffer.from(picture.buffer).toString('base64');
-      let dataURI = 'data:' + picture.mimetype + ';base64,' + b64;
-      const cldRes = await handleUpload(dataURI, index);
-      return cldRes;
-    });
-
-    // BELOW RETURNS THE RESOLVED PROMISE OF MULTIPLEPICTUREPROMISE AS AN ARRAY OF OBJECT
-    // THAT CAN BE MAPPED
-    const imageResponse = await Promise.all(multiplePicturePromise);
-    const imageUrl = imageResponse.map((image) => {
-      const url = image.secure_url;
-      return { url };
-    });
-
-    getProperty.parlor_image = imageUrl;
-
-    getProperty?.save();
-    res
-      .status(200)
-      .json({ message: 'Parlor Image Updated Successfuly', getProperty });
-  } catch (error) {
-    res.status(500).json(error?.message);
-  }
-});
-
-// UPDATE TOILET IMAGE
-
-const uploadToiletImage = expressAsyncHandler(async (req, res) => {
-  try {
-    const houseId = req.params.id;
-    const getProperty = await HouseModel.findById(houseId);
-
-    if (!getProperty) {
-      return res.status(404).json({ message: 'No Property Found' });
-    }
-
-    if (!req.files) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    let files = req?.files;
-
-    let multiplePicturePromise = files.map(async (picture, index) => {
-      const b64 = Buffer.from(picture.buffer).toString('base64');
-      let dataURI = 'data:' + picture.mimetype + ';base64,' + b64;
-      const cldRes = await handleUpload(dataURI, index);
-      return cldRes;
-    });
-
-    // BELOW RETURNS THE RESOLVED PROMISE OF MULTIPLEPICTUREPROMISE AS AN ARRAY OF OBJECT
-    // THAT CAN BE MAPPED
-    const imageResponse = await Promise.all(multiplePicturePromise);
-    const imageUrl = imageResponse.map((image) => {
-      const url = image.secure_url;
-      return { url };
-    });
-
-    getProperty.toilet_image = imageUrl;
-
-    getProperty?.save();
-    res
-      .status(200)
-      .json({ message: 'Toilet Image Updated Successfuly', getProperty });
-  } catch (error) {
-    res.status(500).json(error?.message);
-  }
-});
-
-// UPDATE BATHROOM IMAGE
-
-const uploadBathroomImage = expressAsyncHandler(async (req, res) => {
-  try {
-    const houseId = req.params.id;
-    const getProperty = await HouseModel.findById(houseId);
-
-    if (!getProperty) {
-      return res.status(404).json({ message: 'No Property Found' });
-    }
-
-    if (!req.files) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    let files = req?.files;
-
-    let multiplePicturePromise = files.map(async (picture, index) => {
-      const b64 = Buffer.from(picture.buffer).toString('base64');
-      let dataURI = 'data:' + picture.mimetype + ';base64,' + b64;
-      const cldRes = await handleUpload(dataURI, index);
-      return cldRes;
-    });
-
-    // BELOW RETURNS THE RESOLVED PROMISE OF MULTIPLEPICTUREPROMISE AS AN ARRAY OF OBJECT
-    // THAT CAN BE MAPPED
-    const imageResponse = await Promise.all(multiplePicturePromise);
-    const imageUrl = imageResponse.map((image) => {
-      const url = image.secure_url;
-      return { url };
-    });
-
-    getProperty.bathroom_image = imageUrl;
-
-    getProperty?.save();
-    res
-      .status(200)
-      .json({ message: 'Bathroom Image Updated Successfuly', getProperty });
+    houseToUpdate.image.splice(imageIndex, 1);
+    houseToUpdate.save();
+    res.status(200).json({ message: 'Image Deleted Successfully' });
   } catch (error) {
     res.status(500).json(error?.message);
   }
@@ -356,9 +312,10 @@ module.exports = {
   getAllHouse,
 
   // update image controllers
-  uploadKitchenImage,
-  uploadParlorImage,
-  uploadBathroomImage,
-  uploadToiletImage,
-  updateProperty,
+
+  getUserHouse,
+  deleteHouseByUser,
+  updateHouse,
+  updateHouseImage,
+  deleteHouseImage,
 };
