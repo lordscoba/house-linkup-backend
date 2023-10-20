@@ -1,9 +1,9 @@
 const expressAsyncHandler = require('express-async-handler');
-const generateToken = require('../../utils/handleToken');
+// const generateToken = require('../../utils/handleToken');
 const UserModel = require('../../models/users.model');
 const bcrypt = require('bcryptjs');
 const isValidEmail = require('../../utils/emailValidator');
-const tokenHandler = require('../../utils/handleToken');
+const { tokenHandler, generateToken } = require('../../utils/handleToken');
 const jwt = require('jsonwebtoken');
 const appData = require('../../utils/variables');
 
@@ -12,7 +12,7 @@ const register = expressAsyncHandler(async (req, res) => {
     const email = req.body.email.toLowerCase().trim();
     const full_name = req.body.full_name.toLowerCase().trim();
     // const userName = req.body.userName.toLowerCase().trim();
-    const password = req.body.password.toLowerCase().trim();
+    const password = req.body.password;
     const username = req.body.username.toLowerCase().trim();
 
     const userExist = await UserModel.findOne({ email });
@@ -50,7 +50,7 @@ const register = expressAsyncHandler(async (req, res) => {
 const login = expressAsyncHandler(async (req, res) => {
   try {
     const email = req.body.email.toLowerCase().trim();
-    const password = req.body.password.toLowerCase().trim();
+    const password = req.body?.password;
 
     // VALIDATE EMAIL
     if (!isValidEmail(email)) {
@@ -66,7 +66,8 @@ const login = expressAsyncHandler(async (req, res) => {
     // COMPARE PASSWORD
     const comparePassword = bcrypt.compareSync(password, userDoc?.password);
     if (comparePassword) {
-      const token = tokenHandler.generateToken({ id: userDoc?._id });
+      // const token = tokenHandler.generateToken({ id: userDoc?._id });
+      const token = generateToken(userDoc._id);
       return res.status(200).json({
         userDoc,
         token,

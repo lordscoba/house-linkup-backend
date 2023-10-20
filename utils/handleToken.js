@@ -24,6 +24,18 @@ tokenHandler.decodeToken = (token) => {
   }
 };
 
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      _id: user._id,
+    },
+    'somesecretethat7889838',
+    {
+      expiresIn: '30d',
+    }
+  );
+};
+
 const verifyToken = async (req, res, next) => {
   try {
     let token = req.header('Authorization');
@@ -45,4 +57,4 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-module.exports = { tokenHandler, verifyToken };
+module.exports = { tokenHandler, verifyToken, generateToken };
