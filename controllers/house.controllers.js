@@ -45,7 +45,7 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
       return { url };
     });
 
-    const posterId = tokenHandler?.decodeToken(token);
+    // const posterId = tokenHandler?.decodeToken(token);
 
     const newProperty = await HouseModel.create({
       state,
@@ -64,7 +64,7 @@ const uploadProperty = expressAsyncHandler(async (req, res) => {
       totalNum_ofBathroom,
       totalNum_ofParlor,
       image: imageUrl,
-      poster: posterId?.fieldToSecure?.id,
+      poster: req?.user?._id,
     });
     // console.log({ ne: newProperty });
 
@@ -135,9 +135,8 @@ const deleteHouseByUser = expressAsyncHandler(async (req, res) => {
 const updateHouse = expressAsyncHandler(async (req, res) => {
   try {
     const userId = req?.user?._id;
-    // const id = req?.query?.houseId;
+    const houseId = req?.params?.houseId;
     const {
-      houseId,
       address,
       state,
       local_government,
@@ -145,7 +144,6 @@ const updateHouse = expressAsyncHandler(async (req, res) => {
       house_type,
       price,
       description,
-      poster_email,
       totalNum_ofToilet,
       totalNum_ofRooms,
       totalNum_ofKitchen,
@@ -173,7 +171,7 @@ const updateHouse = expressAsyncHandler(async (req, res) => {
     houseToUpdate.house_type = house_type;
     houseToUpdate.price = price;
     houseToUpdate.description = description;
-    houseToUpdate.poster_email = poster_email;
+    // houseToUpdate.poster_email = poster_email;
     houseToUpdate.totalNum_ofToilet = totalNum_ofToilet;
     houseToUpdate.totalNum_ofRooms = totalNum_ofRooms;
     houseToUpdate.totalNum_ofKitchen = totalNum_ofKitchen;
@@ -251,7 +249,7 @@ const updateHouseImage = expressAsyncHandler(async (req, res) => {
 const deleteHouseImage = expressAsyncHandler(async (req, res) => {
   try {
     const userId = req?.user?._id;
-    const { imageId } = req?.body;
+    const { imageId, houseId } = req?.query;
     const houseToUpdate = await HouseModel.findById(houseId).populate(
       'poster',
       ['_id']
@@ -268,7 +266,7 @@ const deleteHouseImage = expressAsyncHandler(async (req, res) => {
 
     // FIND IMAGE INDEX
     const imageIndex = houseToUpdate?.image?.findIndex(
-      (x) => x?._id === imageId
+      (x) => x?._id.toString() === imageId
     );
     if (imageIndex === -1) {
       return res.status(404).json({ message: 'Image Not Found' });

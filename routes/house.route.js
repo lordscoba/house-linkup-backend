@@ -17,13 +17,18 @@ const { verifyToken } = require('../utils/handleToken');
 
 const Houserouter = require('express').Router();
 
-Houserouter.post('/upload-property', upload.array('image'), uploadProperty);
+Houserouter.post(
+  '/upload-property',
+  verifyToken,
+  upload.array('image'),
+  uploadProperty
+);
 
 Houserouter.get('/all-property/:id', getAllHouse);
 Houserouter.get('/get-user-uploads', verifyToken, getUserHouse);
 Houserouter.delete('/delete-house', verifyToken, deleteHouseByUser);
 // UPDATE HOUSE
-Houserouter.put('/update-house', verifyToken, updateHouse);
+Houserouter.put('/update-house/:houseId', verifyToken, updateHouse);
 Houserouter.put(
   '/update-house-image',
   verifyToken,
