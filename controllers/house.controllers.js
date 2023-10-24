@@ -137,7 +137,6 @@ const updateHouse = expressAsyncHandler(async (req, res) => {
     const userId = req?.user?._id;
     const houseId = req?.params?.houseId;
     const {
-      address,
       state,
       local_government,
       town,
@@ -164,7 +163,6 @@ const updateHouse = expressAsyncHandler(async (req, res) => {
       return res.status(400).json({ message: 'UnAuthorised user' });
     }
 
-    houseToUpdate.address = address;
     houseToUpdate.state = state;
     houseToUpdate.local_government = local_government;
     houseToUpdate.town = town;
@@ -305,6 +303,58 @@ const getAllHouse = expressAsyncHandler(async (req, res) => {
   }
 });
 
+// GET ALL HOUSES
+
+const fetchAllUploads = expressAsyncHandler(async (req, res) => {
+  try {
+    // const userId = req?.user?._id;
+    // console.log({ userId });
+
+    // const user = await UserModel.findById(userId);
+
+    // const userRole = user?.role === 'User';
+
+    // if (userRole) {
+    //   return res.status(400).json({ message: 'UnAthorised User' });
+    // }
+
+    const fetchHouses = await HouseModel.find({}).populate('poster', [
+      'email',
+      'image',
+      'first_name',
+      'last_name',
+      'createdAt',
+    ]);
+    const totalUploads = await HouseModel.find({}).countDocuments();
+    const uploaders = await HouseModel.aggregate([
+      {
+        $group: {
+          _id: '$poster',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $match: {
+          _id: { $ne: null },
+        },
+      },
+    ]);
+
+    if (fetchHouses?.length === 0) {
+      return res.status(200).json({ message: 'No House Found' });
+    }
+
+    res.status(200).json({
+      message: 'Fetched Sucssfully',
+      Houses: fetchHouses,
+      total_uploads: totalUploads,
+      uploaders: uploaders,
+    });
+  } catch (error) {
+    res.status(500).json(error?.message);
+  }
+});
+
 module.exports = {
   uploadProperty,
   getAllHouse,
@@ -316,4 +366,5 @@ module.exports = {
   updateHouse,
   updateHouseImage,
   deleteHouseImage,
+  fetchAllUploads,
 };
