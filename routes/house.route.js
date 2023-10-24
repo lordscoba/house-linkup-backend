@@ -11,6 +11,7 @@ const {
   updateHouse,
   updateHouseImage,
   deleteHouseImage,
+  fetchAllUploads,
 } = require('../controllers/house.controllers');
 const upload = require('../config/file');
 const { verifyToken } = require('../utils/handleToken');
@@ -36,5 +37,7 @@ Houserouter.put(
   updateHouseImage
 );
 Houserouter.delete('/delete-house-image', verifyToken, deleteHouseImage);
+
+Houserouter.get('/fetch-all-houses', fetchAllUploads);
 
 module.exports = Houserouter;

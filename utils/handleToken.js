@@ -29,10 +29,7 @@ const generateToken = (user) => {
     {
       _id: user._id,
     },
-    'somesecretethat7889838',
-    {
-      expiresIn: '30d',
-    }
+    'somesecretethat7889838'
   );
 };
 
