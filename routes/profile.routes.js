@@ -7,7 +7,7 @@ const profileRoutes = require('express').Router();
 const upload = require('../config/file');
 const { verifyToken } = require('../utils/handleToken');
 
-profileRoutes.get('/user-details/:id', getUserDetails);
+profileRoutes.get('/user-details', getUserDetails);
 profileRoutes.put('/update-profile/:id', updateProfile);
 profileRoutes.put(
   '/update-profile-pic',
