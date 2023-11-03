@@ -2,7 +2,7 @@
   "name": "house-linkup-backend",
   "version": "1.0.0",
   "description": "A house finding website",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "npm start",
     "start": "node server.js",
