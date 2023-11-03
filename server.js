@@ -17,6 +17,8 @@ const cookieParser = require('cookie-parser');
 const normalizeCase = require('./utils/nomaliseCase');
 // const { protectUser } = require("./middleware/userMiddleware"); // Auth Middlewares
 
+app.use(cors());
+
 // importing Routes
 const healthRoutes = require('./routes/health.routes');
 const authRoutes = require('./routes/auth.routes');
@@ -43,14 +45,14 @@ const locationRoutes = require('./routes/location.routes');
 //   })
 // );
 
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-  })
-);
+// app.use(
+//   cors({
+//     origin: 'http://localhost:3000',
+//   })
+// );
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
 
