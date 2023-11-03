@@ -4,11 +4,10 @@ const handleUpload = require('../../utils/upload');
 
 // GET USER DETAILS
 const getUserDetails = expressAsyncHandler(async (req, res) => {
-  const userId = req.params.id;
-  try {
-    // console.log({ id: req.params?.id });
+  const userId = req?.query?.id;
 
-    const userDetails = await UserModel.findById(userId);
+  try {
+    const userDetails = await UserModel.findById(userId?.toString());
 
     if (!userDetails) {
       return res.status(404).json({ message: 'User Details is empty' });
@@ -20,41 +19,14 @@ const getUserDetails = expressAsyncHandler(async (req, res) => {
   }
 });
 
-// UPDATE PROFILE
-const updateProfile = expressAsyncHandler(async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const { location, phone_number, username } = req?.body;
-
-    const getUser = await UserModel.findById(userId);
-
-    // console.log({ uu: getUser, userId });
-    if (!getUser) {
-      return res.status(404).json({ message: 'User Not Found' });
-    }
-
-    getUser.location = location;
-    getUser.phone_number = phone_number;
-    getUser.username = username;
-
-    getUser.save();
-    return res
-      .status(200)
-      .json({ message: 'Profile updated successfully', getUser });
-  } catch (error) {
-    res.status(500).json(error?.message);
-  }
-});
-
 // CHANGE PROFILE PICTURE
 
 const changeProfile = expressAsyncHandler(async (req, res) => {
   try {
     const loggedInUser = req?.body?.userId;
 
-    const User = await UserModel.findById(loggedInUser);
+    const User = await UserModel.findById(loggedInUser.toString());
 
-    // console.log({ uu: getUser, userId });
     if (!User) {
       return res.status(404).json({ message: 'User Not Found' });
     }
@@ -85,6 +57,33 @@ const changeProfile = expressAsyncHandler(async (req, res) => {
     return res
       .status(200)
       .json({ message: 'Profile updated successfully', User });
+  } catch (error) {
+    res.status(500).json(error?.message);
+    console.log(error);
+  }
+});
+
+// UPDATE PROFILE
+const updateProfile = expressAsyncHandler(async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { location, phone_number, username } = req?.body;
+
+    const getUser = await UserModel.findById(userId?.toString());
+
+    // console.log({ uu: getUser, userId });
+    if (!getUser) {
+      return res.status(404).json({ message: 'User Not Found' });
+    }
+
+    getUser.location = location;
+    getUser.phone_number = phone_number;
+    getUser.username = username;
+
+    await getUser.save();
+    return res
+      .status(200)
+      .json({ message: 'Profile updated successfully', getUser });
   } catch (error) {
     res.status(500).json(error?.message);
   }
