@@ -4,16 +4,10 @@ const UserModel = require('../models/users.model');
 // USER'S CONTROLLER
 
 const getAllUsers = expressAsyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1; // Current page number
-  const limit = parseInt(req.query.limit) || 3; // Number of users per page
-
   try {
-    const totalCount = await UserModel.countDocuments(); // Count total number of users
-    const totalPages = Math.ceil(totalCount / limit); // Calculate total number of pages
+    const totalCount = await UserModel.countDocuments();
+    const Users = await UserModel.find({});
 
-    const Users = await UserModel.find({})
-      .skip((page - 1) * limit)
-      .limit(limit);
     if (!Users) {
       return res.status(400).json({ message: 'No User Found' });
     }
@@ -21,7 +15,6 @@ const getAllUsers = expressAsyncHandler(async (req, res) => {
     res.status(200).json({
       Users,
       totalUsers: totalCount,
-      totalPages,
     });
   } catch (error) {
     res.status(500).json(error?.message);
