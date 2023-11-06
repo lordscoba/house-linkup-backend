@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const tokenHandler = {};
 const secret = process.env.JWT_SECRET;
 
@@ -29,26 +29,26 @@ const generateToken = (user) => {
     {
       _id: user._id,
     },
-    'somesecretethat7889838'
+    process.env.JWT_SECRET
   );
 };
 
 const verifyToken = async (req, res, next) => {
   try {
-    let token = req.header('Authorization');
-    // console.log({ token });
+    let token = req.header("Authorization");
 
     if (!token) {
-      return res.status(403).send('Access Denied');
+      return res.status(403).send("Access Denied");
     }
 
-    if (token.startsWith('Bearer ')) {
+    if (token.startsWith("Bearer ")) {
       token = token.slice(7, token.length).trimLeft();
     }
 
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verified;
-
+    // console.log(token);
+    // console.log(verified);
     next();
   } catch (error) {
     res.status(500).json({ error: error?.message });
