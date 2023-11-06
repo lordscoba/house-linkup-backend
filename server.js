@@ -1,31 +1,29 @@
 // importing express framework
-const express = require('express');
+const express = require("express");
 const app = express();
 
 // importing .env parser
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
 
 // importing monogodb database
-const connectDB = require('./config/db');
+const connectDB = require("./config/db");
 connectDB();
 
 // importing middlewares
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const normalizeCase = require('./utils/nomaliseCase');
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const normalizeCase = require("./utils/nomaliseCase");
 // const { protectUser } = require("./middleware/userMiddleware"); // Auth Middlewares
 
-app.use(cors());
-
 // importing Routes
-const healthRoutes = require('./routes/health.routes');
-const authRoutes = require('./routes/auth.routes');
-const userRoutes = require('./routes/user.routes');
-const profileRoutes = require('./routes/profile.routes');
-const houseRoutes = require('./routes/house.route');
-const locationRoutes = require('./routes/location.routes');
+const healthRoutes = require("./routes/health.routes");
+const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/user.routes");
+const profileRoutes = require("./routes/profile.routes");
+const houseRoutes = require("./routes/house.route");
+const locationRoutes = require("./routes/location.routes");
 
 // Running Global middlewares
 
@@ -51,27 +49,33 @@ const locationRoutes = require('./routes/location.routes');
 //   })
 // );
 
+app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
 
 // Running Routers
-app.use('/api/v1/', healthRoutes);
+app.use("/api/v1/", healthRoutes);
 
 // middleware to reduce to lowercase
 
-app.use('/api/v1', authRoutes);
-app.use('/api/v1', userRoutes);
-app.use('/api/v1', houseRoutes);
-app.use('/api/v1', locationRoutes);
+app.use("/api/v1", authRoutes);
+app.use("/api/v1", userRoutes);
+app.use("/api/v1", houseRoutes);
+app.use("/api/v1", locationRoutes);
 
 // protected routes
 // app.use(protectUser);
-app.use('/api/v1', profileRoutes);
+app.use("/api/v1", profileRoutes);
 
 // Error Middlewares
-const { notFound, errorHandler } = require('./middleware/errorMiddleware');
+const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 //Not found URL middleware
 app.use(notFound);
@@ -80,7 +84,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 //initializing server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8989;
 app.listen(port, () => {
   console.log(`server at http://localhost:${port}`);
 });
